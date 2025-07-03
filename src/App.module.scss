@@ -1,0 +1,17 @@
+:root {
+  --main-color: #3498db;
+}
+
+.button {
+  color: var(--main-color);
+  padding: 20px;
+  & span {
+    color: white;
+    font-size: 30px;
+  }
+}
+
+.container {
+  display: grid;
+  user-select: none;
+}
