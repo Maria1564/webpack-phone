@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const TerserPlugin = require("terser-webpack-plugin");
+const ESLintWebpackPlugin = require("eslint-webpack-plugin");
 
 module.exports = (env, argv) => {
   console.log("mode >> ", argv.mode);
@@ -33,6 +34,14 @@ module.exports = (env, argv) => {
           chunkFilename: "css/chunk[id]-[contenthash].css",
         }),
       isProd && new BundleAnalyzerPlugin(),
+      isDev &&
+        new ESLintWebpackPlugin({
+          extensions: ["js", "jsx", "ts", "tsx"],
+          failOnError: false, // не останавливать сборку при ошибках
+          failOnWarning: false, // не останавливать сборку при предупреждениях
+          emitWarning: true, // выводить предупреждения
+          emitError: true,
+        }),
     ],
     module: {
       rules: [
@@ -41,7 +50,13 @@ module.exports = (env, argv) => {
           exclude: /node_modules/,
           use: "babel-loader",
         },
-
+        {
+          test: /\.(png|jpe?g|gif|svg)$/i,
+          type: "asset", // Для Webpack 5
+          generator: {
+            filename: "images/[name]-[hash][ext]", // Путь вывода изображений
+          },
+        },
         {
           test: /\.(s?css|sass)$/,
           use: [
@@ -81,6 +96,11 @@ module.exports = (env, argv) => {
           port: env.port ?? 5000,
           open: true,
           historyApiFallback: true,
+          client: {
+            overlay: {
+              warnings: false
+            },
+          },
         }
       : undefined,
   };
