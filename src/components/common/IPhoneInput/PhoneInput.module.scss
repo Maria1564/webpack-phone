@@ -1,0 +1,72 @@
+.phone {
+  &__title {
+    font-weight: 600;
+    font-size: 12px;
+  }
+
+  &__container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+ 
+
+  &__phone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  &__mask {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  &__input {
+    width: 32px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid grey;
+    text-align: center;
+    outline: none;
+
+    &::placeholder {
+      color: rgba(0, 0, 0, 0.5);
+    }
+
+    &:focus,
+    &:hover {
+      border: 1px solid #3e66fb;
+    }
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      display: none;
+    }
+
+    &_warning {
+      border: 1px solid #f0373891;
+    }
+
+    &_access {
+      border: 1px solid #3bc13bb6;
+    }
+  }
+
+  &__message {
+    &_access,
+    &_warning {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(0, 0, 0, 0.5);
+      font-size: 12px;
+    }
+  }
+}
