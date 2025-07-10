@@ -102,6 +102,7 @@ const HomePage = () => {
         ]}
         value="+7123456 789_0"
         onChange={console.log}
+        // disabled
       />
     </div>
   );

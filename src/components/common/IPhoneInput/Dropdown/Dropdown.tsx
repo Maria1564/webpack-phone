@@ -8,12 +8,13 @@ import { useDropdownToggle } from "@/hooks/useDropdownToggle";
 
 type DropdownProps = {
   phoneStore: PhoneStore;
+  disabled: boolean
 };
 
-const Dropdown: React.FC<DropdownProps> = ({ phoneStore }) => {
+const Dropdown: React.FC<DropdownProps> = ({ phoneStore, disabled }) => {
 const refDropdown = useRef<HTMLDivElement | null>(null);
  const { isOpen, openModal, closeModal } = useDropdownToggle(refDropdown);
-
+  console.log(disabled)
 
   const handleOpen = () => {
     if (isOpen) {
@@ -35,8 +36,9 @@ const refDropdown = useRef<HTMLDivElement | null>(null);
           [s.dropdown__select_open]: isOpen,
           [s.dropdown__select_warning]: phoneStore.isValidate === false,
           [s.dropdown__select_access]: phoneStore.isValidate,
+          [s.dropdown__select_disabled]: disabled
         })}
-        onClick={handleOpen}
+        onClick={disabled ? () => {} : handleOpen}
       >
         {phoneStore.currentMask.prefix}
         <img

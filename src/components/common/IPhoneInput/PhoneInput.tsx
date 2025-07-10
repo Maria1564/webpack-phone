@@ -12,9 +12,15 @@ type PhoneInputProps = {
   mask: MaskPhone[];
   value: string;
   onChange: (text: string) => void;
+  disabled?: boolean;
 };
 
-const PhoneInput: React.FC<PhoneInputProps> = ({ onChange, mask, value }) => {
+const PhoneInput: React.FC<PhoneInputProps> = ({
+  onChange,
+  mask,
+  value,
+  disabled = false,
+}) => {
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
   const phoneStore = useLocalStore(() => new PhoneStore(value, mask));
 
@@ -35,14 +41,14 @@ const PhoneInput: React.FC<PhoneInputProps> = ({ onChange, mask, value }) => {
 
   useEffect(() => {
     const handleGlobalKeyUp = (e: KeyboardEvent) => {
-      if (e.key === "Enter") {
+      if (e.key === "Enter" && !disabled) {
         phoneStore.validatePhoneNumber();
       }
     };
     document.addEventListener("keyup", handleGlobalKeyUp);
 
     return () => document.removeEventListener("keyup", handleGlobalKeyUp);
-  }, [phoneStore]);
+  }, [disabled, phoneStore]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const indexInp = Number(e.target.dataset.index);
@@ -59,7 +65,6 @@ const PhoneInput: React.FC<PhoneInputProps> = ({ onChange, mask, value }) => {
       nextInp?.focus();
 
       if (!nextInp) {
-        console.log(phoneStore.digitPhone);
         phoneStore.formatPhoneNumber();
       }
     }
@@ -101,7 +106,9 @@ const PhoneInput: React.FC<PhoneInputProps> = ({ onChange, mask, value }) => {
     <div className={s.phone}>
       <h1 className={s.phone__title}>Введите номер телефона</h1>
       <div className={s.phone__container}>
-        {phoneStore.currentMask.name && <Dropdown phoneStore={phoneStore} />}
+        {phoneStore.currentMask.name && (
+          <Dropdown phoneStore={phoneStore} disabled={disabled} />
+        )}
         <div className={s.phone__mask}>
           {(() => {
             let indexInp = 0;
@@ -111,6 +118,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({ onChange, mask, value }) => {
                 indexInp++;
                 return (
                   <input
+                    disabled={disabled}
                     className={classNames(s.phone__input, {
                       [s.phone__input_warning]: phoneStore.isValidate === false,
                       [s.phone__input_access]: phoneStore.isValidate,
