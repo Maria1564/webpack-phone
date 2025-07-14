@@ -1,11 +1,11 @@
-import { createRoot } from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import App from "@/App";
-import { HomePage } from "@/pages/HomePage";
+import { createRoot } from 'react-dom/client';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import App from '@/App';
+import { HomePage } from '@/pages/HomePage';
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <App />,
     children: [
       {
@@ -16,6 +16,4 @@ const router = createBrowserRouter([
   },
 ]);
 
-createRoot(document.getElementById("root")!).render(
-  <RouterProvider router={router} />
-);
+createRoot(document.getElementById('root')!).render(<RouterProvider router={router} />);

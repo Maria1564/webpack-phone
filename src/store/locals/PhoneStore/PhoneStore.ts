@@ -1,27 +1,22 @@
-import { MaskPhone } from "@/components/common/IPhoneInput/type";
-import { ILocalStore } from "@/store/hooks";
-import { action, computed, makeObservable, observable } from "mobx";
+import { MaskPhone } from '@/components/common/IPhoneInput/type';
+import { ILocalStore } from '@/store/hooks';
+import { action, computed, makeObservable, observable } from 'mobx';
 
-type PrivateFields =
-  | "_phoneOutput"
-  | "_currentMask"
-  | "_digitPhone"
-  | "_maskInfo"
-  | "_isValidate";
+type PrivateFields = '_phoneOutput' | '_currentMask' | '_digitPhone' | '_maskInfo' | '_isValidate';
 
 export class PhoneStore implements ILocalStore {
   private _value: string | null = null;
   private _maskInfo: MaskPhone[] = [];
   private _currentMask: MaskPhone = {
-    key: "",
-    name: "",
-    emoji: "",
-    prefix: "",
-    mask: "(***) - *** - ** - **",
+    key: '',
+    name: '',
+    emoji: '',
+    prefix: '',
+    mask: '(***) - *** - ** - **',
   }; //текущая маска
   private _digitPhone: string[] = [];
   private _maskStarsCount: number = 0;
-  private _phoneOutput: string = ""; //итоговый результат (например: +7(984)934-43-23)
+  private _phoneOutput: string = ''; //итоговый результат (например: +7(984)934-43-23)
   private _isValidate: boolean | null = null;
 
   constructor(value: string, maskInfo: MaskPhone[]) {
@@ -53,7 +48,7 @@ export class PhoneStore implements ILocalStore {
   }
 
   get currentMaskSplit(): string[] {
-    return this._currentMask.mask.split("");
+    return this._currentMask.mask.split('');
   }
 
   get currentMask(): MaskPhone {
@@ -76,7 +71,7 @@ export class PhoneStore implements ILocalStore {
     this._digitPhone = [];
     if (!this._value) return;
     for (let i = this._value.length - 1; i > 0; i--) {
-      if (this._value[i].trim() !== "" && !isNaN(Number(this._value[i]))) {
+      if (this._value[i].trim() !== '' && !isNaN(Number(this._value[i]))) {
         this._digitPhone = [this._value[i], ...this._digitPhone];
       }
 
@@ -103,7 +98,7 @@ export class PhoneStore implements ILocalStore {
     this._phoneOutput = this._currentMask.mask;
 
     while (pointer < this._currentMask.mask.length) {
-      if (this._currentMask.mask[pointer] === "*") {
+      if (this._currentMask.mask[pointer] === '*') {
         this._phoneOutput =
           this._phoneOutput.slice(0, pointer) +
           this._digitPhone[index] +
@@ -118,9 +113,7 @@ export class PhoneStore implements ILocalStore {
 
   setCurrentMask(selectedMask: MaskPhone) {
     this._currentMask = selectedMask;
-    this._maskStarsCount = selectedMask.mask
-      .split("")
-      .filter((item) => item == "*").length;
+    this._maskStarsCount = selectedMask.mask.split('').filter((item) => item == '*').length;
 
     this.extractDigitsToArray();
   }

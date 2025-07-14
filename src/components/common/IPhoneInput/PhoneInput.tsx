@@ -1,12 +1,12 @@
-import { MaskPhone } from "@/components/common/IPhoneInput/type";
-import React, { useEffect, useRef } from "react";
-import s from "./PhoneInput.module.scss";
-import { useLocalStore } from "@/store/hooks";
-import { PhoneStore } from "@/store/locals/PhoneStore";
-import { observer } from "mobx-react-lite";
-import { circleAccess, warning } from "@/assets";
-import classNames from "classnames";
-import { Dropdown } from "@/components/common/IPhoneInput/Dropdown";
+import { MaskPhone } from '@/components/common/IPhoneInput/type';
+import React, { useEffect, useRef } from 'react';
+import s from './PhoneInput.module.scss';
+import { useLocalStore } from '@/store/hooks';
+import { PhoneStore } from '@/store/locals/PhoneStore';
+import { observer } from 'mobx-react-lite';
+import { circleAccess, warning } from '@/assets';
+import classNames from 'classnames';
+import { Dropdown } from '@/components/common/IPhoneInput/Dropdown';
 
 type PhoneInputProps = {
   mask: MaskPhone[];
@@ -15,12 +15,7 @@ type PhoneInputProps = {
   disabled?: boolean;
 };
 
-const PhoneInput: React.FC<PhoneInputProps> = ({
-  onChange,
-  mask,
-  value,
-  disabled = false,
-}) => {
+const PhoneInput: React.FC<PhoneInputProps> = ({ onChange, mask, value, disabled = false }) => {
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
   const phoneStore = useLocalStore(() => new PhoneStore(value, mask));
 
@@ -41,13 +36,13 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
 
   useEffect(() => {
     const handleGlobalKeyUp = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && !disabled) {
+      if (e.key === 'Enter' && !disabled) {
         phoneStore.validatePhoneNumber();
       }
     };
-    document.addEventListener("keyup", handleGlobalKeyUp);
+    document.addEventListener('keyup', handleGlobalKeyUp);
 
-    return () => document.removeEventListener("keyup", handleGlobalKeyUp);
+    return () => document.removeEventListener('keyup', handleGlobalKeyUp);
   }, [disabled, phoneStore]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,19 +72,19 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
 
     if (!currentInp) return;
 
-    if (e.key === "ArrowLeft" && indexInp - 1 > -1) {
+    if (e.key === 'ArrowLeft' && indexInp - 1 > -1) {
       inputsRef.current[indexInp - 1]?.focus();
     }
 
-    if (e.key === "ArrowRight" && indexInp + 1 < phoneStore.digitPhone.length) {
+    if (e.key === 'ArrowRight' && indexInp + 1 < phoneStore.digitPhone.length) {
       inputsRef.current[indexInp + 1]?.focus();
       inputsRef.current[indexInp + 1]?.setSelectionRange(1, 1);
     }
 
-    if (e.key === "Backspace") {
+    if (e.key === 'Backspace') {
       if (currentInp.value.length > 0) {
-        currentInp.value = "";
-        phoneStore.setDigitPhone(indexInp, "");
+        currentInp.value = '';
+        phoneStore.setDigitPhone(indexInp, '');
       } else if (indexInp - 1 > -1) {
         inputsRef.current[indexInp - 1]?.focus();
       }
@@ -106,14 +101,12 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
     <div className={s.phone}>
       <h1 className={s.phone__title}>Введите номер телефона</h1>
       <div className={s.phone__container}>
-        {phoneStore.currentMask.name && (
-          <Dropdown phoneStore={phoneStore} disabled={disabled} />
-        )}
+        {phoneStore.currentMask.name && <Dropdown phoneStore={phoneStore} disabled={disabled} />}
         <div className={s.phone__mask}>
           {(() => {
             let indexInp = 0;
             return phoneStore.currentMaskSplit.map((symb, index) => {
-              if (symb === "*") {
+              if (symb === '*') {
                 const currentInputIndex = indexInp;
                 indexInp++;
                 return (
@@ -130,10 +123,10 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
                     ref={(el) => {
                       inputsRef.current[currentInputIndex] = el;
                     }}
-                    onChange={(e) => handleChange(e)}
-                    onKeyUp={(e) => handleKeyUp(e)}
+                    onChange={handleChange}
+                    onKeyUp={handleKeyUp}
                     data-index={indexInp - 1}
-                    value={phoneStore.digitPhone[currentInputIndex] || ""}
+                    value={phoneStore.digitPhone[currentInputIndex] || ''}
                   />
                 );
               } else {
@@ -145,15 +138,11 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
       </div>
       {phoneStore.isValidate !== null &&
         (phoneStore.isValidate ? (
-          <div
-            className={classNames(s.phone__message, s.phone__message_access)}
-          >
+          <div className={classNames(s.phone__message, s.phone__message_access)}>
             <img src={circleAccess} alt="access" /> Номер телефона введен верно
           </div>
         ) : (
-          <div
-            className={classNames(s.phone__message, s.phone__message_warning)}
-          >
+          <div className={classNames(s.phone__message, s.phone__message_warning)}>
             <img src={warning} alt="warning" />
             Неправильный номер телефона
           </div>
