@@ -1,10 +1,10 @@
-import { HomePage } from "@/pages/HomePage";
-import "./App.module.scss"
+import { HomePage } from '@/pages/HomePage';
+import './App.module.scss';
 
 const App = () => {
   return (
     <>
-      <HomePage/>
+      <HomePage />
     </>
   );
 };
