@@ -7,7 +7,9 @@
     "build:prod": "webpack --mode production",
     "start": "webpack serve --mode development",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "prettier:check": "npx prettier --check '**/*.{ts,tsx}'",
+    "prettier:write": "npx prettier --write '**/*.{ts,tsx}'"
   },
   "keywords": [],
   "author": "",

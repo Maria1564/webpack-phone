@@ -1,0 +1,12 @@
+@use "styles/theme.scss" as c;
+
+.validation-message {
+  &_access,
+  &_warning {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: c.$color-grey;
+    font-size: 12px;
+  }
+}

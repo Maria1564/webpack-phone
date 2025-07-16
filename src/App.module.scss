@@ -1,22 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
-
-
-:root {
-  --main-color: #3498db;
-}
+@use "styles/theme.scss" as c;
 
 body {
-  background-color: #c0e8f3;
+  background-color: c.$color-background;
   font-size: 14px;
   line-height: 20px;
   font-family: 'Open Sans', sans-serif;
 }
 
 .button {
-  color: var(--main-color);
   padding: 20px;
   & span {
-    color: white;
+    color: c.$color-white;
     font-size: 30px;
   }
 }

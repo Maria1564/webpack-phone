@@ -1,3 +1,5 @@
+@use "styles/theme.scss" as c;
+
 .dropdown {
   position: relative;
 
@@ -8,14 +10,14 @@
     justify-content: center;
     width: 77px;
     height: 40px;
-    background-color: #fff;
+    background-color: c.$color-white;
     border-radius: 10px;
     gap: 8px;
-    color: black;
+    color: c.$color-black;
     
     &_disabled {
-      background: #ceeaf2;
-      color: #67546d;
+      background: c.$background-disabled;
+      color: c.$color-disabled;
 
       & .dropdown__arrow-icon {
         cursor: auto;
@@ -23,7 +25,7 @@
     }
 
     &_open {
-      border: 1px solid #3e66fb;
+      border: 1px solid c.$color-blue;
 
       & + .dropdown__options {
         display: block;
@@ -31,11 +33,11 @@
     }
 
     &_warning {
-      border: 1px solid #f0373891;
+      border: 1px solid c.$color-red;
     }
 
     &_access {
-      border: 1px solid #3bc13bb6;
+      border: 1px solid c.$color-green;
     }
   }
 
@@ -49,9 +51,9 @@
     display: none;
     width: 209px;
     max-height: 212px;
-    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.25);
+    box-shadow: 0 0 4px 0 c.$color-shadow;
     border-radius: 10px;
-    background-color: #fff;
+    background-color: c.$color-white;
     overflow: auto;
     margin-bottom: 8px;
   }
@@ -65,11 +67,11 @@
     transition: background-color 0.5s;
 
     &:hover {
-      background-color: rgba(62, 102, 251, 0.25);
+      background-color: c.$color-blue-dark;
     }
   }
 
   &__country-name {
-    color: rgba(0, 0, 0, 0.5);
+    color: c.$color-grey;
   }
 }

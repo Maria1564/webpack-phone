@@ -13,10 +13,7 @@
       "strict": true,
       "forceConsistentCasingInFileNames": true,
       "resolveJsonModule": true,
-      "baseUrl": ".",
-      "paths": {
-        "@/*": ["./src/*"],
-      }
+      "baseUrl": "src",
     },
     "include": [
       "src/**/*"

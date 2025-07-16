@@ -1,12 +1,12 @@
-import { MaskPhone } from '@/components/common/IPhoneInput/type';
 import React, { useEffect, useRef } from 'react';
 import s from './PhoneInput.module.scss';
-import { useLocalStore } from '@/store/hooks';
-import { PhoneStore } from '@/store/locals/PhoneStore';
 import { observer } from 'mobx-react-lite';
-import { circleAccess, warning } from '@/assets';
 import classNames from 'classnames';
-import { Dropdown } from '@/components/common/IPhoneInput/Dropdown';
+import { MaskPhone } from 'components/common/IPhoneInput/type';
+import { useLocalStore } from 'store/hooks/useLocalStore';
+import { PhoneStore } from 'store/locals/PhoneStore';
+import { Dropdown } from 'components/common/IPhoneInput/Dropdown';
+import { ValidationMessage } from 'components/common/IPhoneInput/ValidationMessage';
 
 type PhoneInputProps = {
   mask: MaskPhone[];
@@ -16,34 +16,32 @@ type PhoneInputProps = {
 };
 
 const PhoneInput: React.FC<PhoneInputProps> = ({ onChange, mask, value, disabled = false }) => {
-  const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
+  const inputsRef = useRef<(HTMLInputElement | null)[]>(Array(10).fill(null));
   const phoneStore = useLocalStore(() => new PhoneStore(value, mask));
-
-  useEffect(() => {
-    inputsRef.current = Array(10).fill(null);
-  }, []);
-  useEffect(() => {
-    phoneStore.extractDigitsToArray();
-  }, [phoneStore]);
-
-  useEffect(() => {
-    phoneStore.formatPhoneNumber();
-  }, [phoneStore, phoneStore.digitPhone]);
-
-  useEffect(() => {
-    if (phoneStore.digitPhone.length === 0) return;
-  }, [phoneStore.digitPhone.length]);
+  const {
+    validatePhoneNumber,
+    setDigitPhone,
+    formatPhoneNumber,
+    setCurrentMask,
+    digitPhone,
+    phoneOutput,
+    currentMask,
+    currentMaskSplit,
+    isValid,
+    maskInfo,
+    maskIndexMap,
+  } = phoneStore;
 
   useEffect(() => {
     const handleGlobalKeyUp = (e: KeyboardEvent) => {
       if (e.key === 'Enter' && !disabled) {
-        phoneStore.validatePhoneNumber();
+        validatePhoneNumber();
       }
     };
     document.addEventListener('keyup', handleGlobalKeyUp);
 
     return () => document.removeEventListener('keyup', handleGlobalKeyUp);
-  }, [disabled, phoneStore]);
+  }, [disabled, validatePhoneNumber]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const indexInp = Number(e.target.dataset.index);
@@ -55,12 +53,12 @@ const PhoneInput: React.FC<PhoneInputProps> = ({ onChange, mask, value, disabled
         currentInp.value = currentInp.value[currentInp.value.length - 1];
       }
 
-      phoneStore.setDigitPhone(indexInp, currentInp.value);
+      if (setDigitPhone(indexInp, currentInp.value)) {
+        nextInp?.focus();
 
-      nextInp?.focus();
-
-      if (!nextInp) {
-        phoneStore.formatPhoneNumber();
+        if (!nextInp) {
+          formatPhoneNumber();
+        }
       }
     }
   };
@@ -76,7 +74,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({ onChange, mask, value, disabled
       inputsRef.current[indexInp - 1]?.focus();
     }
 
-    if (e.key === 'ArrowRight' && indexInp + 1 < phoneStore.digitPhone.length) {
+    if (e.key === 'ArrowRight' && indexInp + 1 < digitPhone.length) {
       inputsRef.current[indexInp + 1]?.focus();
       inputsRef.current[indexInp + 1]?.setSelectionRange(1, 1);
     }
@@ -84,7 +82,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({ onChange, mask, value, disabled
     if (e.key === 'Backspace') {
       if (currentInp.value.length > 0) {
         currentInp.value = '';
-        phoneStore.setDigitPhone(indexInp, '');
+        setDigitPhone(indexInp, '');
       } else if (indexInp - 1 > -1) {
         inputsRef.current[indexInp - 1]?.focus();
       }
@@ -92,61 +90,64 @@ const PhoneInput: React.FC<PhoneInputProps> = ({ onChange, mask, value, disabled
   };
 
   useEffect(() => {
-    if (phoneStore.phoneOutput) {
-      onChange(phoneStore.phoneOutput);
+    if (phoneOutput) {
+      onChange(phoneOutput);
     }
-  }, [onChange, phoneStore.phoneOutput]);
+  }, [onChange, phoneOutput]);
+
+  useEffect(() => {
+    inputsRef.current[0]?.focus();
+  }, [currentMask]);
 
   return (
     <div className={s.phone}>
       <h1 className={s.phone__title}>Введите номер телефона</h1>
       <div className={s.phone__container}>
-        {phoneStore.currentMask.name && <Dropdown phoneStore={phoneStore} disabled={disabled} />}
+        {currentMask.name && (
+          <Dropdown
+            currentMask={currentMask}
+            isValid={isValid}
+            maskInfo={maskInfo}
+            setCurrentMask={setCurrentMask}
+            disabled={disabled}
+          />
+        )}
         <div className={s.phone__mask}>
-          {(() => {
-            let indexInp = 0;
-            return phoneStore.currentMaskSplit.map((symb, index) => {
-              if (symb === '*') {
-                const currentInputIndex = indexInp;
-                indexInp++;
-                return (
-                  <input
-                    disabled={disabled}
-                    className={classNames(s.phone__input, {
-                      [s.phone__input_warning]: phoneStore.isValidate === false,
-                      [s.phone__input_access]: phoneStore.isValidate,
-                    })}
-                    key={index}
-                    type="text"
-                    name={`input${indexInp}`}
-                    placeholder={String(indexInp)}
-                    ref={(el) => {
-                      inputsRef.current[currentInputIndex] = el;
-                    }}
-                    onChange={handleChange}
-                    onKeyUp={handleKeyUp}
-                    data-index={indexInp - 1}
-                    value={phoneStore.digitPhone[currentInputIndex] || ''}
-                  />
-                );
-              } else {
-                return <span key={index}>{symb}</span>;
-              }
-            });
-          })()}
+          {currentMaskSplit.map((symb, index) => {
+            if (symb === '*') {
+              return (
+                <input
+                  disabled={disabled}
+                  className={classNames(s.phone__input, {
+                    [s.phone__input_warning]: isValid === false,
+                    [s.phone__input_access]: isValid,
+                  })}
+                  key={index}
+                  type="text"
+                  name={`input${maskIndexMap[index].index}`}
+                  placeholder={String(maskIndexMap[index].index)}
+                  ref={(el) => {
+                    inputsRef.current[maskIndexMap[index].index] = el;
+                  }}
+                  onChange={handleChange}
+                  onKeyUp={handleKeyUp}
+                  data-index={maskIndexMap[index].index}
+                  value={digitPhone[maskIndexMap[index].index] || ''}
+                />
+              );
+            } else {
+              return <span key={index}>{symb}</span>;
+            }
+          })}
         </div>
       </div>
-      {phoneStore.isValidate !== null &&
-        (phoneStore.isValidate ? (
-          <div className={classNames(s.phone__message, s.phone__message_access)}>
-            <img src={circleAccess} alt="access" /> Номер телефона введен верно
-          </div>
-        ) : (
-          <div className={classNames(s.phone__message, s.phone__message_warning)}>
-            <img src={warning} alt="warning" />
-            Неправильный номер телефона
-          </div>
-        ))}
+      {isValid !== null && (
+        <ValidationMessage
+          messageAccess="Номер телефона введен верно"
+          messageWrong="Неправильный номер телефона"
+          isValid={isValid}
+        />
+      )}
     </div>
   );
 };

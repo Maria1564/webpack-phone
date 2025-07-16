@@ -1,4 +1,4 @@
-import { PhoneInput } from '@/components/common/IPhoneInput';
+import { PhoneInput } from 'components/common/IPhoneInput';
 import React from 'react';
 
 const HomePage = () => {
@@ -99,7 +99,7 @@ const HomePage = () => {
             mask: '(***) ***-**-**',
           },
         ]}
-        value="+7123456 789_0"
+        value="+74234)434(2 23"
         onChange={console.log}
         // disabled
       />

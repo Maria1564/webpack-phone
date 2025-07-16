@@ -1,8 +1,8 @@
-import { MaskPhone } from '@/components/common/IPhoneInput/type';
-import { ILocalStore } from '@/store/hooks';
+import { MaskPhone } from 'components/common/IPhoneInput/type';
 import { action, computed, makeObservable, observable } from 'mobx';
+import { ILocalStore } from 'store/hooks';
 
-type PrivateFields = '_phoneOutput' | '_currentMask' | '_digitPhone' | '_maskInfo' | '_isValidate';
+type PrivateFields = '_phoneOutput' | '_currentMask' | '_digitPhone' | '_maskInfo' | '_isValid';
 
 export class PhoneStore implements ILocalStore {
   private _value: string | null = null;
@@ -17,7 +17,7 @@ export class PhoneStore implements ILocalStore {
   private _digitPhone: string[] = [];
   private _maskStarsCount: number = 0;
   private _phoneOutput: string = ''; //итоговый результат (например: +7(984)934-43-23)
-  private _isValidate: boolean | null = null;
+  private _isValid: boolean | null = null;
 
   constructor(value: string, maskInfo: MaskPhone[]) {
     this._value = value.trim();
@@ -29,7 +29,7 @@ export class PhoneStore implements ILocalStore {
       _maskInfo: observable,
       _phoneOutput: observable,
       _digitPhone: observable,
-      _isValidate: observable,
+      _isValid: observable,
       formatPhoneNumber: action,
       extractDigitsToArray: action,
       setDigitPhone: action,
@@ -39,7 +39,8 @@ export class PhoneStore implements ILocalStore {
       currentMaskSplit: computed,
       digitPhone: computed,
       maskInfo: computed,
-      isValidate: computed,
+      isValid: computed,
+      maskIndexMap: computed,
     });
   }
 
@@ -49,6 +50,23 @@ export class PhoneStore implements ILocalStore {
 
   get currentMaskSplit(): string[] {
     return this._currentMask.mask.split('');
+  }
+
+  get maskIndexMap(): { [key: string]: { index: number } } {
+    const arrMaskSplit = this.currentMaskSplit;
+    let index = 0;
+    return arrMaskSplit.reduce((acc, elem, currentIndex) => {
+      if (elem !== '*') {
+        return acc;
+      }
+
+      return {
+        ...acc,
+        [currentIndex]: {
+          index: index++,
+        },
+      };
+    }, {});
   }
 
   get currentMask(): MaskPhone {
@@ -63,31 +81,38 @@ export class PhoneStore implements ILocalStore {
     return this._maskInfo;
   }
 
-  get isValidate(): boolean | null {
-    return this._isValidate;
+  get isValid(): boolean | null {
+    return this._isValid;
   }
 
-  extractDigitsToArray(): void {
+  extractDigitsToArray = (): void => {
     this._digitPhone = [];
-    if (!this._value) return;
-    for (let i = this._value.length - 1; i > 0; i--) {
-      if (this._value[i].trim() !== '' && !isNaN(Number(this._value[i]))) {
-        this._digitPhone = [this._value[i], ...this._digitPhone];
-      }
+    if (this._value) {
+      for (let i = this._value.length - 1; i > 0; i--) {
+        console.log(Number(this._value[i]));
+        if (!isNaN(Number(this._value[i])) && this._value[i] !== ' ') {
+          this._digitPhone = [this._value[i], ...this._digitPhone];
+        }
 
-      if (this._digitPhone.length === this._maskStarsCount) {
-        break;
+        if (this._digitPhone.length === this._maskStarsCount) {
+          break;
+        }
       }
     }
-  }
+  };
 
-  setDigitPhone(index: number, value: string) {
+  setDigitPhone = (index: number, value: string): boolean => {
+    if (isNaN(Number(value))) {
+      return false;
+    }
+
     const updated = [...this.digitPhone];
     updated[index] = value;
     this._digitPhone = updated;
-  }
+    return true;
+  };
 
-  formatPhoneNumber() {
+  formatPhoneNumber = () => {
     const lenPhone = this._digitPhone.filter((num) => num).length;
     if (lenPhone !== this._maskStarsCount) {
       return;
@@ -109,24 +134,24 @@ export class PhoneStore implements ILocalStore {
     }
 
     this._phoneOutput = this._currentMask.prefix + this._phoneOutput;
-  }
+  };
 
-  setCurrentMask(selectedMask: MaskPhone) {
+  setCurrentMask = (selectedMask: MaskPhone) => {
     this._currentMask = selectedMask;
     this._maskStarsCount = selectedMask.mask.split('').filter((item) => item == '*').length;
 
     this.extractDigitsToArray();
-  }
+  };
 
-  validatePhoneNumber() {
+  validatePhoneNumber = () => {
     const checkedDigitPhone = this._digitPhone.filter((num) => num).length;
 
     if (checkedDigitPhone === this._maskStarsCount) {
-      this._isValidate = true;
+      this._isValid = true;
     } else {
-      this._isValidate = false;
+      this._isValid = false;
     }
-  }
+  };
 
-  destroy() {}
+  destroy = () => {};
 }
