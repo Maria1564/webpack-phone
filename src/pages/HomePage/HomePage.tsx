@@ -6,14 +6,6 @@ const HomePage = () => {
     <div>
       <PhoneInput
         mask={[
-          // {
-          //   key: "",
-          //   name: "",
-          //   emoji: "",
-          //   prefix: "",
-          //   mask: "****",
-          // },
-
           {
             key: 'ru',
             name: 'Россия',
@@ -101,7 +93,6 @@ const HomePage = () => {
         ]}
         value="+74234)434(2 23"
         onChange={console.log}
-        // disabled
       />
     </div>
   );

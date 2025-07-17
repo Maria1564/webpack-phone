@@ -3,7 +3,7 @@ const eslintPluginTypeScript = require("@typescript-eslint/eslint-plugin");
 const eslintPluginReactHooks = require("eslint-plugin-react-hooks");
 const tsParser = require("@typescript-eslint/parser");
 
-/** @type {import("eslint").Linter.FlatConfig} */
+/** @type {import("eslint").Linter.Config} */
 module.exports = [
   {
     files: ["**/*.{js,ts,jsx,tsx}"],
