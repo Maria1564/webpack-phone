@@ -20,7 +20,6 @@ const Dropdown: React.FC<DropdownProps> = ({
   currentMask,
   disabled,
 }) => {
-  console.log(setCurrentMask);
   const refDropdown = useRef<HTMLDivElement | null>(null);
   const { isOpen, openModal, closeModal } = useDropdownToggle(refDropdown);
 

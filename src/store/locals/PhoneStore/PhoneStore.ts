@@ -89,7 +89,6 @@ export class PhoneStore implements ILocalStore {
     this._digitPhone = [];
     if (this._value) {
       for (let i = this._value.length - 1; i > 0; i--) {
-        console.log(Number(this._value[i]));
         if (!isNaN(Number(this._value[i])) && this._value[i] !== ' ') {
           this._digitPhone = [this._value[i], ...this._digitPhone];
         }
